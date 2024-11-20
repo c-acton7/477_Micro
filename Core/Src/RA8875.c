@@ -299,12 +299,16 @@ void RA8875_write_data (uint8_t d)
     if (!(RA8875_BUS_FREE (1))) return;
   }
   uint8_t rs_rw_info = 0b00000000;
-  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+//  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
 
   HAL_SPI_Transmit(&hspi1, &rs_rw_info, 1, HAL_MAX_DELAY);
-  HAL_SPI_Transmit(&hspi1, &d, 1, 1000);
+//  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_SET);
+//  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
+  HAL_SPI_Transmit(&hspi1, &d, 1, HAL_MAX_DELAY);
 
-  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+//  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_SET);
 }
 
 /**************************************************************************/
@@ -318,17 +322,17 @@ uint8_t RA8875_read_data (void)
 
   uint8_t data = 0;
   //Wait is active low
-  if (LCD_WAIT_STATUS == 0)
-  {
-    if (!(RA8875_BUS_FREE (1))) return 0;
-  }
-  uint8_t rs_rw_info = 0b01000000;
-  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_RESET);
-
-  HAL_SPI_Transmit(&hspi2, &rs_rw_info, 1, 1000);
-  HAL_SPI_Receive(&hspi2, &data, 1, 1000);
-
-  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
+//  if (LCD_WAIT_STATUS == 0)
+//  {
+//    if (!(RA8875_BUS_FREE (1))) return 0;
+//  }
+//  uint8_t rs_rw_info = 0b01000000;
+//  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_RESET);
+//
+//  HAL_SPI_Transmit(&hspi2, &rs_rw_info, 1, 1000);
+//  HAL_SPI_Receive(&hspi2, &data, 1, 1000);
+//
+//  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
   return data;
 }
 
@@ -346,12 +350,16 @@ void RA8875_write_command (uint8_t d)
     if (!(RA8875_BUS_FREE (1))) return;
   }
   uint8_t rs_rw_info = 0b10000000;
-  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+//  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
 
   HAL_SPI_Transmit(&hspi1, &rs_rw_info, 1, HAL_MAX_DELAY);
-  HAL_SPI_Transmit(&hspi1, &d, 1, 1000);
+//  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_SET);
+//  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
+  HAL_SPI_Transmit(&hspi1, &d, 1, HAL_MAX_DELAY);
 
-  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+//  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_SET);
 }
 
 /**************************************************************************/
@@ -364,17 +372,17 @@ uint8_t RA8875_read_status (void)
 {
   uint8_t status = 0;
   //Wait is active low
-  if (LCD_WAIT_STATUS == 0)
-  {
-    if (!(RA8875_BUS_FREE (1))) return 0;
-  }
-  uint8_t rs_rw_info = 0b11000000;
-  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_RESET);
-
-  HAL_SPI_Transmit(&hspi2, &rs_rw_info, 1, 1000);
-  HAL_SPI_Receive(&hspi2, &status, 1, 1000);
-
-  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
+//  if (LCD_WAIT_STATUS == 0)
+//  {
+//    if (!(RA8875_BUS_FREE (1))) return 0;
+//  }
+//  uint8_t rs_rw_info = 0b11000000;
+//  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_RESET);
+//
+//  HAL_SPI_Transmit(&hspi2, &rs_rw_info, 1, 1000);
+//  HAL_SPI_Receive(&hspi2, &status, 1, 1000);
+//
+//  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
   return status;
 }
 

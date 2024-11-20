@@ -110,7 +110,7 @@ BYTE xchg_spi (
 )
 {
 	BYTE rxDat;
-    HAL_SPI_TransmitReceive_DMA(&SD_SPI_HANDLE, &dat, &rxDat, 1);
+    HAL_SPI_TransmitReceive(&SD_SPI_HANDLE, &dat, &rxDat, 1, 50);
 
     return rxDat;
 }
@@ -137,8 +137,7 @@ void xmit_spi_multi (
 	UINT btx			/* Number of bytes to send (even number) */
 )
 {
-	HAL_SPI_Transmit_DMA(&SD_SPI_HANDLE, buff, btx);
-//	while ((READ_BIT(hspi->Instance->IER, SPI_IT_EOT) == 0)) {}
+	HAL_SPI_Transmit(&SD_SPI_HANDLE, buff, btx, HAL_MAX_DELAY);
 }
 #endif
 

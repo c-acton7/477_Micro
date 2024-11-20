@@ -209,46 +209,46 @@ void game_matrix(void) {
 	get_word_matrix(word_matrix);
 
 	//background
-//	RA8875_fill_screen(RA8875_BLUE);
-//	//4x4 square matrix with words
-//	for (int row = 0; row < ROWS; row++) {
-//	  for (int col = 0; col < COLS; col++) {
-//		  int x = MARGIN + col * (SQWIDTH + SPACE);
-//		  int y = HEADER + MARGIN + row * (SQHEIGHT + SPACE);
-//
-//		  RA8875_draw_fill_rect(x, y, SQWIDTH, SQHEIGHT, RA8875_WHITE);
-//
-//		  int textX = x + SQWIDTH / 2 - 40;
-//		  int textY = y + SQHEIGHT / 2 - 15;
-//
-//		  RA8875_text_mode();
-//		  RA8875_text_cursor_position(textX, textY);
-//		  RA8875_text_color (RA8875_BLACK, RA8875_WHITE);
-//		  RA8875_text_scale(1);
-//
-//		  RA8875_text_write(word_matrix[4*row + col].word, 6);
-//		  RA8875_graphic_mode();
-//	  }
-//	}
-//	//timer
-//	RA8875_text_mode();
-//	RA8875_text_cursor_position(CENTER_X-200, 50);
-//	RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
-//	RA8875_text_scale(1);
-//	RA8875_text_write("10", 3);
-//	//score
-//	RA8875_text_cursor_position(CENTER_X+190, 50);
-//	RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
-//	RA8875_text_scale(1);
-//	RA8875_text_write("Score: 0", 9);
-//	//clue
-//	RA8875_text_cursor_position(CENTER_X, 50);
-//	RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
-//	RA8875_text_scale(1);
-//	RA8875_text_write("kitchen", 8);
-//	RA8875_graphic_mode();
-//
-//	HAL_TIM_Base_Start_IT(&htim6);
+	RA8875_fill_screen(RA8875_BLUE);
+	//4x4 square matrix with words
+	for (int row = 0; row < ROWS; row++) {
+	  for (int col = 0; col < COLS; col++) {
+		  int x = MARGIN + col * (SQWIDTH + SPACE);
+		  int y = HEADER + MARGIN + row * (SQHEIGHT + SPACE);
+
+		  RA8875_draw_fill_rect(x, y, SQWIDTH, SQHEIGHT, RA8875_WHITE);
+
+		  int textX = x + SQWIDTH / 2 - 40;
+		  int textY = y + SQHEIGHT / 2 - 15;
+
+		  RA8875_text_mode();
+		  RA8875_text_cursor_position(textX, textY);
+		  RA8875_text_color (RA8875_BLACK, RA8875_WHITE);
+		  RA8875_text_scale(1);
+
+		  RA8875_text_write(word_matrix[4*row + col].word, 6);
+		  RA8875_graphic_mode();
+	  }
+	}
+	//timer
+	RA8875_text_mode();
+	RA8875_text_cursor_position(CENTER_X-200, 50);
+	RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
+	RA8875_text_scale(1);
+	RA8875_text_write("10", 3);
+	//score
+	RA8875_text_cursor_position(CENTER_X+190, 50);
+	RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
+	RA8875_text_scale(1);
+	RA8875_text_write("Score: 0", 9);
+	//clue
+	RA8875_text_cursor_position(CENTER_X, 50);
+	RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
+	RA8875_text_scale(1);
+	RA8875_text_write("kitchen", 8);
+	RA8875_graphic_mode();
+
+	HAL_TIM_Base_Start_IT(&htim6);
 
 	return;
 }

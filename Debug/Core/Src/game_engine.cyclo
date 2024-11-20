@@ -1,7 +1,7 @@
 ../Core/Src/game_engine.c:26:6:generate_random_letters	2
 ../Core/Src/game_engine.c:35:6:title_screen	4
 ../Core/Src/game_engine.c:135:6:show_menu	1
-../Core/Src/game_engine.c:207:6:game_matrix	1
+../Core/Src/game_engine.c:207:6:game_matrix	3
 ../Core/Src/game_engine.c:256:6:process_input	24
 ../Core/Src/game_engine.c:422:6:end_game	2
 ../Core/Src/game_engine.c:502:6:settings	1
