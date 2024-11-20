@@ -1,0 +1,8 @@
+../Core/Src/game_engine.c:26:6:generate_random_letters	24	static
+../Core/Src/game_engine.c:35:6:title_screen	48	static
+../Core/Src/game_engine.c:135:6:show_menu	24	static
+../Core/Src/game_engine.c:207:6:game_matrix	8	static
+../Core/Src/game_engine.c:256:6:process_input	72	static
+../Core/Src/game_engine.c:422:6:end_game	32	static
+../Core/Src/game_engine.c:502:6:settings	24	static
+../Core/Src/game_engine.c:571:6:calc_score	24	static
