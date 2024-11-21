@@ -255,11 +255,13 @@ void game_matrix(void) {
 
 void process_input(int key) {
 
+					//   0  1  2  3   4   5  6  7  8   9   10 11 12  13  14  15 16 17  18  19
+	uint8_t mapping[] = {0, 4, 8, 12, -1, 1, 5, 9, 13, -1, 2, 6, 10, 14, -1, 3, 7, 11, 15, -1};
 	switch(mode) {
 		case GAME_MODE_TITLE:
 			break;
 		case GAME_MODE_MENU:
-			if(key == 0) {
+			if(key == 4) {
 				RA8875_draw_fill_round_rect(CENTER_X-150, CENTER_Y-35, 300, 70, 10, RA8875_BLACK);
 				RA8875_draw_fill_round_rect(CENTER_X-140, CENTER_Y-25, 280, 50, 7, RA8875_GREEN);
 				RA8875_text_mode();
@@ -272,7 +274,7 @@ void process_input(int key) {
 				HAL_Delay(250);
 				game_matrix();
 			}
-			else if(key == 4) {
+			else if(key == 9) {
 				RA8875_draw_fill_round_rect(CENTER_X-150, CENTER_Y+55, 300, 70, 10, RA8875_BLACK);
 				RA8875_draw_fill_round_rect(CENTER_X-140, CENTER_Y+65, 280, 50, 7, RA8875_GREEN);
 				RA8875_text_mode();
@@ -287,7 +289,8 @@ void process_input(int key) {
 			}
 			break;
 		case GAME_MODE_PLAY:
-			if(0 <= key && key < 16 && key != picked) {
+			if(0 <= key && (key+6) % 5 && key != picked) {
+				key = mapping[key];
 				guess_remain--;
 				int x = MARGIN + (key % 4) * (SQWIDTH + SPACE);
 				int y = HEADER + MARGIN + (key / 4) * (SQHEIGHT + SPACE);
@@ -321,7 +324,7 @@ void process_input(int key) {
 			}
 			break;
 		case GAME_MODE_END:
-			if(key == 0) {
+			if(key == 4) {
 				RA8875_draw_fill_round_rect(CENTER_X-150, CENTER_Y-35, 300, 70, 10, RA8875_BLACK);
 				RA8875_draw_fill_round_rect(CENTER_X-140, CENTER_Y-25, 280, 50, 7, RA8875_GREEN);
 				RA8875_text_mode();
@@ -334,7 +337,7 @@ void process_input(int key) {
 				HAL_Delay(250);
 				game_matrix();
 			}
-			else if(key == 4) {
+			else if(key == 9) {
 				RA8875_draw_fill_round_rect(CENTER_X-150, CENTER_Y+55, 300, 70, 10, RA8875_BLACK);
 				RA8875_draw_fill_round_rect(CENTER_X-140, CENTER_Y+65, 280, 50, 7, RA8875_GREEN);
 				RA8875_text_mode();
@@ -349,7 +352,7 @@ void process_input(int key) {
 			}
 			break;
 		case GAME_MODE_SETTINGS:
-			if(key == 0) {
+			if(key == 4) {
 				RA8875_draw_fill_rect(10, CENTER_Y-40, 280, 50, RA8875_GREEN);
 				RA8875_text_mode();
 				RA8875_text_color (RA8875_BLACK, RA8875_GREEN);
@@ -364,7 +367,7 @@ void process_input(int key) {
 
 				HAL_Delay(250);
 			}
-			else if(key == 4) {
+			else if(key == 9) {
 				if(set_b) {
 					set_b = 0;
 					RA8875_draw_fill_rect(CENTER_X+40, CENTER_Y-35, 280, 40, RA8875_BLUE);
@@ -395,7 +398,7 @@ void process_input(int key) {
 					show_menu();
 				}
 			}
-			else if((key == 1) && set_b) {
+			else if((key == 19) && set_b) {
 				current_b += 8;
 				if (current_b > 255) {
 					current_b = 255;
@@ -405,7 +408,7 @@ void process_input(int key) {
 				RA8875_draw_fill_rect(CENTER_X+50, CENTER_Y-28, 256, 25, RA8875_YELLOW);
 				RA8875_draw_fill_rect(CENTER_X+45+current_b, CENTER_Y-34, 10, 37, RA8875_BLACK);
 			}
-			else if((key == 5) && set_b) {
+			else if((key == 14) && set_b) {
 				current_b -= 8;
 				if (current_b < 10) {
 					current_b = 10;

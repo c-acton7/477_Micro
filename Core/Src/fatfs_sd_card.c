@@ -585,35 +585,35 @@ void get_word_matrix(WordVector* word_matrix)
     	return;
     }
 
-    fr = f_open(&file, "floats.bin", FA_READ);
+    fr = f_open(&file, "worddata.csv", FA_READ);
     if (fr != FR_OK) {
     	return;
     }
 
-//    //read and discard the first line (header and BOM line)
-//    f_gets(line, sizeof(line), &file);
-//
-//    // Read lines from the file and parse them
-//    for(int i = 0; i < NUM_WORDS; i++) {
-//    	f_gets(line, sizeof(line), &file);
-//        parse_word_data(line, &word_matrix[i]);
-//    }
-    const int CHUNK_SIZE = 512;
-    uint8_t buffer[CHUNK_SIZE];
-    UINT bytesRead;
-    FRESULT res;
-    long totalFloats = 0;
+    //read and discard the first line (header and BOM line)
+    f_gets(line, sizeof(line), &file);
 
-    while (1) {
-        res = f_read(&file, buffer, sizeof(buffer), &bytesRead);
-        if (res != FR_OK || totalFloats >= 100000) {
-            break;
-        }
-
-        uint8_t numFloats = bytesRead / sizeof(float); // Number of floats in the chunk
-
-        totalFloats += numFloats; // Keep track of the total floats processed
+    // Read lines from the file and parse them
+    for(int i = 0; i < NUM_WORDS; i++) {
+    	f_gets(line, sizeof(line), &file);
+        parse_word_data(line, &word_matrix[i]);
     }
+//    const int CHUNK_SIZE = 512;
+//    uint8_t buffer[CHUNK_SIZE];
+//    UINT bytesRead;
+//    FRESULT res;
+//    long totalFloats = 0;
+//
+//    while (1) {
+//        res = f_read(&file, buffer, sizeof(buffer), &bytesRead);
+//        if (res != FR_OK || totalFloats >= 100000) {
+//            break;
+//        }
+//
+//        uint8_t numFloats = bytesRead / sizeof(float); // Number of floats in the chunk
+//
+//        totalFloats += numFloats; // Keep track of the total floats processed
+//    }
 
     //close the file
     f_close(&file);

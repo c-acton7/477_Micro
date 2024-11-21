@@ -17,4 +17,4 @@
 ../Core/Src/fatfs_sd_card.c:407:9:SD_disk_write	24	static
 ../Core/Src/fatfs_sd_card.c:462:9:SD_disk_ioctl	56	static
 ../Core/Src/fatfs_sd_card.c:557:6:parse_word_data	24	static
-../Core/Src/fatfs_sd_card.c:575:6:get_word_matrix	1320	dynamic
+../Core/Src/fatfs_sd_card.c:575:6:get_word_matrix	1272	static

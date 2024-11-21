@@ -3,6 +3,6 @@
 ../Core/Src/game_engine.c:135:6:show_menu	1
 ../Core/Src/game_engine.c:207:6:game_matrix	3
 ../Core/Src/game_engine.c:256:6:process_input	24
-../Core/Src/game_engine.c:422:6:end_game	2
-../Core/Src/game_engine.c:502:6:settings	1
-../Core/Src/game_engine.c:571:6:calc_score	10
+../Core/Src/game_engine.c:425:6:end_game	2
+../Core/Src/game_engine.c:505:6:settings	1
+../Core/Src/game_engine.c:574:6:calc_score	10

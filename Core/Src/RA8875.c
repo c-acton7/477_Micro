@@ -33,7 +33,6 @@ RA8875_bpp_e _color_depth;
 
 //Wait is active low in RA8875
 #define LCD_WAIT_STATUS (_wait_port->IDR & _wait_pin)
-//#define LCD_WAIT_STATUS 1
 
 static void swap (int16_t *x, int16_t *y)
 {
@@ -173,12 +172,6 @@ static void RA8875_init (uint16_t color_depth, uint16_t mcu_bus)
   RA8875_write_reg (RA8875_VEAW0, (uint16_t) (_height - 1 + _voffset) & 0xFF); // vertical end point
   RA8875_write_reg (RA8875_VEAW1, (uint16_t) (_height - 1 + _voffset) >> 8);
 
-  /**
-   * LCD WITH 2 layer
-   */
-//  RA8875_write_reg (RA8875_DPCR, RA8875_DPCR_2_LAYER);
-  /* ToDo: Setup touch panel? */
-
   /* Clear the entire window */
   RA8875_write_reg (RA8875_MCLR, RA8875_MCLR_START | RA8875_MCLR_FULL);
   HAL_Delay (500);
@@ -294,21 +287,18 @@ uint8_t RA8875_read_reg (uint8_t reg)
 /**************************************************************************/
 void RA8875_write_data (uint8_t d)
 {
+  //  Wait is active low
   if (LCD_WAIT_STATUS == 0)
   {
     if (!(RA8875_BUS_FREE (1))) return;
   }
   uint8_t rs_rw_info = 0b00000000;
-//  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
 
   HAL_SPI_Transmit(&hspi1, &rs_rw_info, 1, HAL_MAX_DELAY);
-//  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_SET);
-//  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
   HAL_SPI_Transmit(&hspi1, &d, 1, HAL_MAX_DELAY);
 
-//  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 }
 
 /**************************************************************************/
@@ -321,18 +311,18 @@ uint8_t RA8875_read_data (void)
 {
 
   uint8_t data = 0;
-  //Wait is active low
-//  if (LCD_WAIT_STATUS == 0)
-//  {
-//    if (!(RA8875_BUS_FREE (1))) return 0;
-//  }
-//  uint8_t rs_rw_info = 0b01000000;
-//  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_RESET);
-//
-//  HAL_SPI_Transmit(&hspi2, &rs_rw_info, 1, 1000);
-//  HAL_SPI_Receive(&hspi2, &data, 1, 1000);
-//
-//  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
+  //  Wait is active low
+  if (LCD_WAIT_STATUS == 0)
+  {
+    if (!(RA8875_BUS_FREE (1))) return 0;
+  }
+  uint8_t rs_rw_info = 0b01000000;
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+
+  HAL_SPI_Transmit(&hspi1, &rs_rw_info, 1, HAL_MAX_DELAY);
+  HAL_SPI_Receive(&hspi1, &data, 1, HAL_MAX_DELAY);
+
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
   return data;
 }
 
@@ -350,16 +340,12 @@ void RA8875_write_command (uint8_t d)
     if (!(RA8875_BUS_FREE (1))) return;
   }
   uint8_t rs_rw_info = 0b10000000;
-//  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
 
   HAL_SPI_Transmit(&hspi1, &rs_rw_info, 1, HAL_MAX_DELAY);
-//  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_SET);
-//  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
   HAL_SPI_Transmit(&hspi1, &d, 1, HAL_MAX_DELAY);
 
-//  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
 }
 
 /**************************************************************************/
@@ -372,17 +358,17 @@ uint8_t RA8875_read_status (void)
 {
   uint8_t status = 0;
   //Wait is active low
-//  if (LCD_WAIT_STATUS == 0)
-//  {
-//    if (!(RA8875_BUS_FREE (1))) return 0;
-//  }
-//  uint8_t rs_rw_info = 0b11000000;
-//  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_RESET);
-//
-//  HAL_SPI_Transmit(&hspi2, &rs_rw_info, 1, 1000);
-//  HAL_SPI_Receive(&hspi2, &status, 1, 1000);
-//
-//  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
+  if (LCD_WAIT_STATUS == 0)
+  {
+    if (!(RA8875_BUS_FREE (1))) return 0;
+  }
+  uint8_t rs_rw_info = 0b11000000;
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+
+  HAL_SPI_Transmit(&hspi1, &rs_rw_info, 1, HAL_MAX_DELAY);
+  HAL_SPI_Receive(&hspi1, &status, 1, HAL_MAX_DELAY);
+
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
   return status;
 }
 
