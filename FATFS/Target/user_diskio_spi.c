@@ -26,6 +26,7 @@
 
 #include "stm32h7xx_hal.h" /* Provide the low-level HAL functions */
 #include "user_diskio_spi.h"
+#include <stdio.h>
 
 //Make sure you set #define SD_SPI_HANDLE as some hspix in main.h
 extern SPI_HandleTypeDef SD_SPI_HANDLE;
@@ -112,6 +113,12 @@ BYTE xchg_spi (
 	BYTE rxDat;
     HAL_SPI_TransmitReceive_DMA(&SD_SPI_HANDLE, &dat, &rxDat, 1);
 
+
+//	 Clear the DMA transfer complete flag
+//    while (__HAL_DMA_GET_FLAG(hspi2.hdmarx, DMA_FLAG_TCIF3_7) == RESET) {
+//        // Optionally, add a timeout here
+//    }
+
     return rxDat;
 }
 
@@ -137,7 +144,7 @@ void xmit_spi_multi (
 	UINT btx			/* Number of bytes to send (even number) */
 )
 {
-	HAL_SPI_Transmit_DMA(&SD_SPI_HANDLE, buff, btx);
+	HAL_SPI_Transmit(&SD_SPI_HANDLE, buff, btx, HAL_MAX_DELAY);
 //	while ((READ_BIT(hspi->Instance->IER, SPI_IT_EOT) == 0)) {}
 }
 #endif
@@ -174,7 +181,6 @@ int wait_ready (	/* 1:Ready, 0:Timeout */
 /* Despiselect card and release SPI                                         */
 /*-----------------------------------------------------------------------*/
 
-static
 void despiselect (void)
 {
 	CS_HIGH();		/* Set CS# high */
@@ -188,7 +194,7 @@ void despiselect (void)
 /* Select card and wait for ready                                        */
 /*-----------------------------------------------------------------------*/
 
-static
+
 int spiselect (void)	/* 1:OK, 0:Timeout */
 {
 	CS_LOW();		/* Set CS# low */
@@ -333,7 +339,7 @@ inline DSTATUS USER_SPI_initialize (
 
 	if (Stat & STA_NODISK) return Stat;	/* Is card existing in the soket? */
 
-	Set_SPI_BaudRate(&SD_SPI_HANDLE, SPI_BAUDRATEPRESCALER_64);
+	Set_SPI_BaudRate(&SD_SPI_HANDLE, SPI_BAUDRATEPRESCALER_256);
 	for (n = 10; n; n--) xchg_spi(0xFF);	/* Send 80 dummy clocks */
 
 	ty = 0;
@@ -363,7 +369,7 @@ inline DSTATUS USER_SPI_initialize (
 	despiselect();
 
 	if (ty) {			/* OK */
-		Set_SPI_BaudRate(&SD_SPI_HANDLE, SPI_BAUDRATEPRESCALER_4);	/* Set fast clock */
+		Set_SPI_BaudRate(&SD_SPI_HANDLE, SPI_BAUDRATEPRESCALER_2);	/* Set fast clock */
 		Stat &= ~STA_NOINIT;	/* Clear STA_NOINIT flag */
 	} else {			/* Failed */
 		Stat = STA_NOINIT;
@@ -552,3 +558,51 @@ inline DRESULT USER_SPI_ioctl (
 	return res;
 }
 #endif
+
+
+
+float * read_vec(unsigned short string){
+	char name[6];
+	FRESULT fr;
+	FIL file;
+	UINT bytes;
+	float arr_float[501];
+
+	spiselect();
+	snprintf(name, 5,  "vector%d.bin", string);
+
+	fr =  f_open(&file, name, FA_READ);
+
+	fr = f_read(&file, arr_float, 501*4, &bytes);
+
+	fr = f_close(&file);
+
+	despiselect();
+
+	return arr_float;
+}
+
+char * read_word(unsigned short string){
+	char name[6];
+	FRESULT fr;
+	FIL file;
+	UINT bytes;
+	char arr_char[25];
+	char* index;
+
+	spiselect();
+	snprintf(name, 5,  "word%d.bin", string);
+
+	fr =  f_open(&file, name, FA_READ);
+
+	fr = f_read(&file, arr_char, 1, &bytes);
+	index = arr_char;
+	while(index != 0){
+		index++;
+		fr = f_read(&file, index, 1, &bytes);
+	}
+	fr = f_close(&file);
+	despiselect();
+
+	return arr_char;
+}
