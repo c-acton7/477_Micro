@@ -83,8 +83,8 @@ void Error_Handler(void);
 #define COL2_GPIO_Port GPIOD
 #define COL3_Pin GPIO_PIN_7
 #define COL3_GPIO_Port GPIOD
-#define LEDG_Pin GPIO_PIN_9
-#define LEDG_GPIO_Port GPIOB
+#define COL4_Pin GPIO_PIN_9
+#define COL4_GPIO_Port GPIOB
 #define LEDY_Pin GPIO_PIN_0
 #define LEDY_GPIO_Port GPIOE
 #define LEDR_Pin GPIO_PIN_1

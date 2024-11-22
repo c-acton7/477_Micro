@@ -111,7 +111,7 @@ BYTE xchg_spi (
 )
 {
 	BYTE rxDat;
-    HAL_SPI_TransmitReceive_DMA(&SD_SPI_HANDLE, &dat, &rxDat, 1);
+    HAL_SPI_TransmitReceive(&SD_SPI_HANDLE, &dat, &rxDat, 1, HAL_MAX_DELAY);
 
 
 //	 Clear the DMA transfer complete flag
@@ -145,7 +145,9 @@ void xmit_spi_multi (
 )
 {
 	HAL_SPI_Transmit(&SD_SPI_HANDLE, buff, btx, HAL_MAX_DELAY);
+
 //	while ((READ_BIT(hspi->Instance->IER, SPI_IT_EOT) == 0)) {}
+
 }
 #endif
 
@@ -184,7 +186,7 @@ int wait_ready (	/* 1:Ready, 0:Timeout */
 void despiselect (void)
 {
 	CS_HIGH();		/* Set CS# high */
-	xchg_spi(0xFF);	/* Dummy clock (force DO hi-z for multiple slave SPI) */
+//	xchg_spi(0xFF);	/* Dummy clock (force DO hi-z for multiple slave SPI) */
 
 }
 
@@ -198,11 +200,11 @@ void despiselect (void)
 int spiselect (void)	/* 1:OK, 0:Timeout */
 {
 	CS_LOW();		/* Set CS# low */
-	xchg_spi(0xFF);	/* Dummy clock (force DO enabled) */
-	if (wait_ready(500)) return 1;	/* Wait for card ready */
-
-	despiselect();
-	return 0;	/* Timeout */
+//	xchg_spi(0xFF);	/* Dummy clock (force DO enabled) */
+//	if (wait_ready(500)) return 1;	/* Wait for card ready */
+//
+//	despiselect();
+//	return 0;	/* Timeout */
 }
 
 
@@ -561,15 +563,16 @@ inline DRESULT USER_SPI_ioctl (
 
 
 
-float * read_vec(unsigned short string){
-	char name[6];
+float * read_vec(unsigned short string, char * word){
+	char name[18];
 	FRESULT fr;
 	FIL file;
 	UINT bytes;
-	float arr_float[501];
+	//JOSEPH CHANGED THIS TO MALLOC SO HE CAN FREE AND FORGET IT LATER
+	float * arr_float = malloc(sizeof(*arr_float) * 501);
 
 	spiselect();
-	snprintf(name, 5,  "vector%d.bin", string);
+	snprintf(name, 18,  "v/vector%05d.bin", string);
 
 	fr =  f_open(&file, name, FA_READ);
 
@@ -591,7 +594,7 @@ char * read_word(unsigned short string){
 	char* index;
 
 	spiselect();
-	snprintf(name, 5,  "word%d.bin", string);
+	snprintf(name, 5,  "v/word%d.bin", string);
 
 	fr =  f_open(&file, name, FA_READ);
 

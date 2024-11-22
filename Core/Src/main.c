@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "fatfs.h"
+#include "user_diskio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -84,7 +85,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  int k;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -116,56 +117,51 @@ int main(void)
 
   //Init display with 480x272 and set color as 16-bit per pixel
 //  RA8875_begin(LCD_RESET_GPIO_Port,LCD_RESET_Pin,LCD_WAIT_GPIO_Port,LCD_WAIT_Pin,RA8875_800x480,RA8875_16BPP);
-//
-//  //Power on the dispaly
+
+  //Power on the dispaly
 //  RA8875_display_on(1);
-//
-//  //Backlight on
+
+  //Backlight on
 //  RA8875_pwm1_config(1,RA8875_PWM_CLK_DIV1);
-//
-//  RA8875_pwm1_out(255);
-//  RA8875_fill_screen(RA8875_RED);
-//
+
 //  title_screen();
-  game_matrix();
-  HAL_GPIO_WritePin(LEDG_GPIO_Port, LEDG_Pin, 1);
+
+//  game_matrix();
+
+  char buffer[2];
+  buffer[0] = 'a';
+  buffer[1] = 'b';
+
+
+//  FATFS fs;
+//  FRESULT fr = f_mount(&fs, "", 1);
+//  float* x = read_vec(20);
+//  fr = f_mount(NULL, "", 1);
+//  HAL_GPIO_WritePin(LEDY_GPIO_Port, LEDY_Pin, 1);
+
+//
+//  HAL_Delay(1000);
+
+//  show_menu();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
 //  int data;
 //  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, 1);
 //  uint8_t pdata = 0x55;
 
+  HAL_Delay(10000);
   while (1)
   {
-//	data = read_keypad();
-//	if(data % 5 == 0) {
-//		HAL_GPIO_WritePin(LEDR_GPIO_Port, LEDR_Pin, GPIO_PIN_SET);
-//	}
-//	else if(data % 5 == 1) {
-//		HAL_GPIO_WritePin(LEDY_GPIO_Port, LEDY_Pin, GPIO_PIN_SET);
-//	}
-//	else if(data % 5 == 2) {
-//		HAL_GPIO_WritePin(LEDR_GPIO_Port, LEDR_Pin, GPIO_PIN_SET);
-//		HAL_GPIO_WritePin(LEDY_GPIO_Port, LEDY_Pin, GPIO_PIN_SET);
-//	}
-//	else if(data % 5 == 3) {
-//		HAL_GPIO_WritePin(LEDG_GPIO_Port, LEDG_Pin, GPIO_PIN_SET);
-//	}
-//	else if(data % 5 == 4 && data != -1) {
-//		HAL_GPIO_WritePin(LEDR_GPIO_Port, LEDR_Pin, GPIO_PIN_SET);
-//		HAL_GPIO_WritePin(LEDG_GPIO_Port, LEDG_Pin, GPIO_PIN_SET);
-//	}
-//	else {
-//		HAL_GPIO_WritePin(LEDR_GPIO_Port, LEDR_Pin, GPIO_PIN_RESET);
-//		HAL_GPIO_WritePin(LEDY_GPIO_Port, LEDY_Pin, GPIO_PIN_RESET);
-//		HAL_GPIO_WritePin(LEDG_GPIO_Port, LEDG_Pin, GPIO_PIN_RESET);
-//	}
-//	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
-//	HAL_SPI_Transmit(&hspi1, &pdata, 1, 1000);
-//	HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_SET);
-//	HAL_Delay(1000);
+	  spiselect();
+	   HAL_SPI_Transmit(&hspi2, buffer, 2, HAL_MAX_DELAY);
+	   despiselect();
+//	k = read_keypad();
+//	process_input(k);
+//	HAL_Delay(10);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -336,8 +332,8 @@ static void MX_SPI2_Init(void)
   hspi2.Init.Mode = SPI_MODE_MASTER;
   hspi2.Init.Direction = SPI_DIRECTION_2LINES;
   hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_HIGH;
+  hspi2.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
   hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
@@ -452,7 +448,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, COL1_Pin|COL2_Pin|COL3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LEDG_GPIO_Port, LEDG_Pin, GPIO_PIN_RESET);
+//  HAL_GPIO_WritePin(LEDG_GPIO_Port, LEDG_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, LEDY_Pin|LEDR_Pin, GPIO_PIN_RESET);
@@ -500,11 +496,11 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LEDG_Pin */
-  GPIO_InitStruct.Pin = LEDG_Pin;
+  GPIO_InitStruct.Pin = COL4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LEDG_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LEDY_Pin LEDR_Pin */
   GPIO_InitStruct.Pin = LEDY_Pin|LEDR_Pin;

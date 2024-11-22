@@ -35,6 +35,7 @@ void get_word_matrix(WordVector* word_matrix)
     	return;
     }
 
+//<<<<<<< HEAD
 //    //read and discard the first line (header and BOM line)
 //    f_gets(line, sizeof(line), &file);
 //
@@ -51,7 +52,7 @@ void get_word_matrix(WordVector* word_matrix)
     while (1) {
     	bytesRead = 0;
         res = f_read(&file, buffer, 512, &bytesRead);
-        if (res != FR_OK || totalFloats >= 10000000) {
+        if (res != FR_OK || totalFloats >= 2500000) {
             break;
         }
         if(bytesRead != 512){
@@ -59,6 +60,7 @@ void get_word_matrix(WordVector* word_matrix)
         }
         totalFloats += bytesRead; // Keep track of the total floats processed
     }
+
 
     //close the file
     f_close(&file);
