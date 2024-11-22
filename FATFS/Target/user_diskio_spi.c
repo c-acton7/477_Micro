@@ -27,6 +27,7 @@
 #include "stm32h7xx_hal.h" /* Provide the low-level HAL functions */
 #include "user_diskio_spi.h"
 #include <stdio.h>
+#include <string.h>
 
 //Make sure you set #define SD_SPI_HANDLE as some hspix in main.h
 extern SPI_HandleTypeDef SD_SPI_HANDLE;
@@ -569,30 +570,47 @@ float * read_vec(unsigned short index, char * word){
 	FIL file;
 	UINT bytes;
 
-	//JOSEPH CHANGED THIS TO MALLOC SO HE CAN FREE AND FORGET IT LATER
-	float arr_float[508];
-			//malloc(sizeof(*arr_float) * 508);
+	uint8_t buffer[2048];
+
+	uint32_t floatsRead = 0;
+	uint32_t charsRead = 0;
+
+
+	float arr_floats[501];
+//	malloc(sizeof(*arr_float) * 508);
 
 	spiselect();
 	snprintf(name, 22,  "Win/v/vector%05d.bin", index);
 
 	fr =  f_open(&file, name, FA_READ);
+	bytes = 0;
+	fr = f_read(&file, buffer, 2048, &bytes);
 
-	fr = f_read(&file, arr_float, 501*4, &bytes);
 
-	 uint8_t *bytePointer = (uint8_t *)arr_float;
+	// Process the buffer
+	uint8_t *ptr = buffer;
+	if (bytes > 0) {
+		// Process floats first
+		while (floatsRead < 501 && bytes >= sizeof(float)) {
+			memcpy(&arr_floats[floatsRead], ptr, sizeof(float));
+			ptr += sizeof(float);
+			bytes -= sizeof(float);
+			floatsRead++;
+		}
 
-	// Example: Extracting bytes 0 to 4 into a char array
-	for (size_t i = 0; i < 25; i++) {
-		word[i] = (char)bytePointer[i];
+		// Process characters
+		while (charsRead < 25 && bytes > 0) {
+			word[charsRead] = *ptr;
+			ptr++;
+			bytes--;
+			charsRead++;
+		}
 	}
-
-
 	fr = f_close(&file);
 
 	despiselect();
 
-	return &arr_float;
+	return arr_floats;
 }
 
 //char * read_word(unsigned short string){

@@ -133,8 +133,13 @@ int main(void)
 //  game_matrix();
   	  FATFS fs;
   	  FRESULT fr;
+
+
   	  fr = f_mount(&fs, "", 1);
   	  clues();
+//  	  char word[25] = {'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'};
+//  	  char word[25];
+//  	  read_vec(1, word);
   	  fr = f_mount(NULL, "", 0);
 
 
