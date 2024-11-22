@@ -141,13 +141,13 @@ void gen_board(unsigned short * board_idx, Glove_Vector ** board_glove, Dict_Vec
 //    printf("C1\n");
 
 	//GATHER ALL BOARD VECTOR MATERIALS
-    for(unsigned short gather_idx = 0; gather_idx < 160; gather_idx += 1){
-    	char * word = malloc(sizeof(*word) * 25);
+    for(unsigned short gather_idx = 0; gather_idx < 16 * num_rounds; gather_idx += 1){
+    	char word[25];
     	float * vec_floats = read_vec(board_idx[gather_idx], word);
     	for(unsigned short wi = 0; wi < 25; wi += 1){
         	board_glove[gather_idx / 16][gather_idx % 16].word[wi] = word[wi];
     	}
-    	free(word);
+    	//free(word);
     	for(unsigned short move_idx = 0; move_idx < 300; move_idx += 1){
     		//SAVE WORD TO GLOVE VEC TOO
     		board_glove[gather_idx / 16][gather_idx % 16].dims[move_idx] = vec_floats[1 + move_idx];
@@ -155,7 +155,7 @@ void gen_board(unsigned short * board_idx, Glove_Vector ** board_glove, Dict_Vec
     			board_dict[gather_idx/16][gather_idx%16].dims[move_idx] = vec_floats[301 + move_idx];
     		}
     	}
-    	free(vec_floats);
+    	//free(vec_floats);
     }
 
     //Vector Scores for each board comparing to first target
@@ -524,7 +524,7 @@ void play_round(unsigned short * clues, Glove_Vector ** board_glove, int num_rou
 
 void clues(){
 //    int num_rounds = read_rounds(argv[1]);
-     int num_rounds = 10;
+     int num_rounds = 1;
 //    Glove_Vector all_glove[50000];
 //    read_glove_2("glovevecs", all_glove);
 //    printf("Checkpoint #1\n");

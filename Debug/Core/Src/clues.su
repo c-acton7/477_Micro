@@ -7,7 +7,7 @@
 ../Core/Src/clues.c:125:7:glove_similarity	8	static
 ../Core/Src/clues.c:129:7:dict_similarity	8	static
 ../Core/Src/clues.c:133:7:vector_score	2456	static
-../Core/Src/clues.c:137:6:gen_board	4128	static
+../Core/Src/clues.c:137:6:gen_board	4152	static
 ../Core/Src/clues.c:210:5:is_valid_clue	16	static
 ../Core/Src/clues.c:220:6:get_possibles	6152	static
 ../Core/Src/clues.c:290:7:overlap_score	4536	static

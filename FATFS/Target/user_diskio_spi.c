@@ -564,16 +564,17 @@ inline DRESULT USER_SPI_ioctl (
 
 
 float * read_vec(unsigned short index, char * word){
-	char name[24];
+	char name[22];
 	FRESULT fr;
 	FIL file;
 	UINT bytes;
 
 	//JOSEPH CHANGED THIS TO MALLOC SO HE CAN FREE AND FORGET IT LATER
-	float * arr_float = malloc(sizeof(*arr_float) * 508);
+	float arr_float[508];
+			//malloc(sizeof(*arr_float) * 508);
 
 	spiselect();
-	snprintf(name, 24,  "Win/v/vector%05d.bin", index);
+	snprintf(name, 22,  "Win/v/vector%05d.bin", index);
 
 	fr =  f_open(&file, name, FA_READ);
 
@@ -591,7 +592,7 @@ float * read_vec(unsigned short index, char * word){
 
 	despiselect();
 
-	return arr_float;
+	return &arr_float;
 }
 
 //char * read_word(unsigned short string){

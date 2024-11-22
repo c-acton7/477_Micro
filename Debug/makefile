@@ -64,8 +64,8 @@ all: main-build
 main-build: conundrum_crack.elf secondary-outputs
 
 # Tool invocations
-conundrum_crack.elf conundrum_crack.map: $(OBJS) $(USER_OBJS) C:\Users\arebeiro\477_Micro\STM32H743VITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "conundrum_crack.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\arebeiro\477_Micro\STM32H743VITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="conundrum_crack.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+conundrum_crack.elf conundrum_crack.map: $(OBJS) $(USER_OBJS) C:\Users\colby\STM32CubeIDE\workspace_1.16.0\conundrum_crack\STM32H743VITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "conundrum_crack.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\colby\STM32CubeIDE\workspace_1.16.0\conundrum_crack\STM32H743VITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="conundrum_crack.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
