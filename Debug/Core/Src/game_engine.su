@@ -1,8 +1,8 @@
 ../Core/Src/game_engine.c:26:6:generate_random_letters	24	static
-../Core/Src/game_engine.c:35:6:title_screen	48	static
-../Core/Src/game_engine.c:135:6:show_menu	24	static
-../Core/Src/game_engine.c:207:6:game_matrix	8	static
-../Core/Src/game_engine.c:256:6:process_input	96	static
-../Core/Src/game_engine.c:425:6:end_game	32	static
-../Core/Src/game_engine.c:505:6:settings	24	static
-../Core/Src/game_engine.c:574:6:calc_score	24	static
+../Core/Src/game_engine.c:38:6:title_screen	48	static
+../Core/Src/game_engine.c:138:6:show_menu	24	static
+../Core/Src/game_engine.c:210:6:game_matrix	8	static
+../Core/Src/game_engine.c:259:6:process_input	96	static
+../Core/Src/game_engine.c:428:6:end_game	32	static
+../Core/Src/game_engine.c:508:6:settings	24	static
+../Core/Src/game_engine.c:577:6:calc_score	24	static

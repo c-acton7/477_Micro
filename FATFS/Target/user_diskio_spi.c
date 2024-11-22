@@ -186,7 +186,7 @@ int wait_ready (	/* 1:Ready, 0:Timeout */
 void despiselect (void)
 {
 	CS_HIGH();		/* Set CS# high */
-//	xchg_spi(0xFF);	/* Dummy clock (force DO hi-z for multiple slave SPI) */
+	xchg_spi(0xFF);	/* Dummy clock (force DO hi-z for multiple slave SPI) */
 
 }
 
@@ -200,11 +200,11 @@ void despiselect (void)
 int spiselect (void)	/* 1:OK, 0:Timeout */
 {
 	CS_LOW();		/* Set CS# low */
-//	xchg_spi(0xFF);	/* Dummy clock (force DO enabled) */
-//	if (wait_ready(500)) return 1;	/* Wait for card ready */
-//
-//	despiselect();
-//	return 0;	/* Timeout */
+	xchg_spi(0xFF);	/* Dummy clock (force DO enabled) */
+	if (wait_ready(500)) return 1;	/* Wait for card ready */
+
+	despiselect();
+	return 0;	/* Timeout */
 }
 
 
@@ -563,20 +563,29 @@ inline DRESULT USER_SPI_ioctl (
 
 
 
-float * read_vec(unsigned short string, char * word){
-	char name[18];
+float * read_vec(unsigned short index, char * word){
+	char name[24];
 	FRESULT fr;
 	FIL file;
 	UINT bytes;
+
 	//JOSEPH CHANGED THIS TO MALLOC SO HE CAN FREE AND FORGET IT LATER
-	float * arr_float = malloc(sizeof(*arr_float) * 501);
+	float * arr_float = malloc(sizeof(*arr_float) * 508);
 
 	spiselect();
-	snprintf(name, 18,  "v/vector%05d.bin", string);
+	snprintf(name, 24,  "Win/v/vector%05d.bin", index);
 
 	fr =  f_open(&file, name, FA_READ);
 
 	fr = f_read(&file, arr_float, 501*4, &bytes);
+
+	 uint8_t *bytePointer = (uint8_t *)arr_float;
+
+	// Example: Extracting bytes 0 to 4 into a char array
+	for (size_t i = 0; i < 25; i++) {
+		word[i] = (char)bytePointer[i];
+	}
+
 
 	fr = f_close(&file);
 
@@ -585,27 +594,27 @@ float * read_vec(unsigned short string, char * word){
 	return arr_float;
 }
 
-char * read_word(unsigned short string){
-	char name[6];
-	FRESULT fr;
-	FIL file;
-	UINT bytes;
-	char arr_char[25];
-	char* index;
-
-	spiselect();
-	snprintf(name, 5,  "v/word%d.bin", string);
-
-	fr =  f_open(&file, name, FA_READ);
-
-	fr = f_read(&file, arr_char, 1, &bytes);
-	index = arr_char;
-	while(index != 0){
-		index++;
-		fr = f_read(&file, index, 1, &bytes);
-	}
-	fr = f_close(&file);
-	despiselect();
-
-	return arr_char;
-}
+//char * read_word(unsigned short string){
+//	char name[6];
+//	FRESULT fr;
+//	FIL file;
+//	UINT bytes;
+//	char arr_char[25];
+//	char* index;
+//
+//	spiselect();
+//	snprintf(name, 5,  "v/word%d.bin", string);
+//
+//	fr =  f_open(&file, name, FA_READ);
+//
+//	fr = f_read(&file, arr_char, 1, &bytes);
+//	index = arr_char;
+//	while(index != 0){
+//		index++;
+//		fr = f_read(&file, index, 1, &bytes);
+//	}
+//	fr = f_close(&file);
+//	despiselect();
+//
+//	return arr_char;
+//}

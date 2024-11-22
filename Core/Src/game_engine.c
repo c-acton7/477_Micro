@@ -32,6 +32,9 @@ void generate_random_letters(char* buffer, size_t length) {
 	buffer[length] = '\0';
 }
 
+
+
+
 void title_screen(void) {
 	mode = GAME_MODE_TITLE;
 

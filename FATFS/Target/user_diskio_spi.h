@@ -26,8 +26,7 @@
 //we define them as extern because they are defined in a separate .c file to user_diskio.c (which #includes this .h file)
 
 void Set_SPI_BaudRate(SPI_HandleTypeDef *hspi, uint32_t prescalar);
-float* read_vec(unsigned short);
-char* read_word(unsigned short);
+float* read_vec(unsigned short, char*);
 int spiselect (void);
 void despiselect (void);
 

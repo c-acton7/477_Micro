@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "fatfs.h"
-#include "user_diskio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -28,6 +27,7 @@
 #include "game_engine.h"
 #include "fatfs_sd_card.h"
 #include "user_diskio_spi.h"
+#include "clues.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,6 +49,8 @@
 
 I2S_HandleTypeDef hi2s3;
 
+RNG_HandleTypeDef hrng;
+
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 DMA_HandleTypeDef hdma_spi2_rx;
@@ -68,6 +70,7 @@ static void MX_SPI1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_I2S3_Init(void);
+static void MX_RNG_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -112,6 +115,7 @@ int main(void)
   MX_FATFS_Init();
   MX_TIM6_Init();
   MX_I2S3_Init();
+  MX_RNG_Init();
   /* USER CODE BEGIN 2 */
 
 
@@ -127,10 +131,11 @@ int main(void)
 //  title_screen();
 
 //  game_matrix();
-
-  char buffer[2];
-  buffer[0] = 'a';
-  buffer[1] = 'b';
+  	  FATFS fs;
+  	  FRESULT fr;
+  	  fr = f_mount(&fs, "", 1);
+  	  clues();
+  	  fr = f_mount(NULL, "", 0);
 
 
 //  FATFS fs;
@@ -153,12 +158,9 @@ int main(void)
 //  HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, 1);
 //  uint8_t pdata = 0x55;
 
-  HAL_Delay(10000);
+//  HAL_Delay(10000);
   while (1)
   {
-	  spiselect();
-	   HAL_SPI_Transmit(&hspi2, buffer, 2, HAL_MAX_DELAY);
-	   despiselect();
 //	k = read_keypad();
 //	process_input(k);
 //	HAL_Delay(10);
@@ -191,9 +193,10 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_DIV1;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 4;
@@ -261,6 +264,33 @@ static void MX_I2S3_Init(void)
   /* USER CODE BEGIN I2S3_Init 2 */
 
   /* USER CODE END I2S3_Init 2 */
+
+}
+
+/**
+  * @brief RNG Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RNG_Init(void)
+{
+
+  /* USER CODE BEGIN RNG_Init 0 */
+
+  /* USER CODE END RNG_Init 0 */
+
+  /* USER CODE BEGIN RNG_Init 1 */
+
+  /* USER CODE END RNG_Init 1 */
+  hrng.Instance = RNG;
+  hrng.Init.ClockErrorDetection = RNG_CED_ENABLE;
+  if (HAL_RNG_Init(&hrng) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RNG_Init 2 */
+
+  /* USER CODE END RNG_Init 2 */
 
 }
 
@@ -448,7 +478,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, COL1_Pin|COL2_Pin|COL3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-//  HAL_GPIO_WritePin(LEDG_GPIO_Port, LEDG_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(COL4_GPIO_Port, COL4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, LEDY_Pin|LEDR_Pin, GPIO_PIN_RESET);
@@ -495,12 +525,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LEDG_Pin */
+  /*Configure GPIO pin : COL4_Pin */
   GPIO_InitStruct.Pin = COL4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(COL4_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LEDY_Pin LEDR_Pin */
   GPIO_InitStruct.Pin = LEDY_Pin|LEDR_Pin;

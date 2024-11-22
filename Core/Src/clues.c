@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include "user_diskio_spi.h"
 
 typedef struct{
     char word[25];
@@ -11,6 +12,16 @@ typedef struct{
 typedef struct{
     float dims[200];
 } Dict_Vector;
+
+int get_rand_num(void){
+	while(1){
+		if(RNG->SR & RNG_SR_DRDY ){
+			return RNG->DR;
+		}
+	}
+	return 0;
+
+}
 
 unsigned short pick_index(float * arr, unsigned short len, unsigned short highest){
     //Find the index of the highest/lowest float in an array
@@ -75,7 +86,7 @@ void shuffle(unsigned short * board_idx){
     for(unsigned short idx = 0; idx < 2; idx += 1){
         for(unsigned short jdx = 0; jdx < 250; jdx += 1){
         	//USE TRUE_RNG HERE
-            unsigned short rnd = get_trueRNG() % 250;
+            unsigned short rnd = (unsigned short)(get_rand_num() % 250);
             unsigned short tmp = board_idx[rnd];
             board_idx[rnd] = board_idx[jdx];
             board_idx[jdx] = tmp;
@@ -131,9 +142,12 @@ void gen_board(unsigned short * board_idx, Glove_Vector ** board_glove, Dict_Vec
 
 	//GATHER ALL BOARD VECTOR MATERIALS
     for(unsigned short gather_idx = 0; gather_idx < 160; gather_idx += 1){
-    	char word[25];
+    	char * word = malloc(sizeof(*word) * 25);
     	float * vec_floats = read_vec(board_idx[gather_idx], word);
-    	board_glove[gather_idx / 16][gather_idx % 16].word = word;
+    	for(unsigned short wi = 0; wi < 25; wi += 1){
+        	board_glove[gather_idx / 16][gather_idx % 16].word[wi] = word[wi];
+    	}
+    	free(word);
     	for(unsigned short move_idx = 0; move_idx < 300; move_idx += 1){
     		//SAVE WORD TO GLOVE VEC TOO
     		board_glove[gather_idx / 16][gather_idx % 16].dims[move_idx] = vec_floats[1 + move_idx];
@@ -171,8 +185,8 @@ void gen_board(unsigned short * board_idx, Glove_Vector ** board_glove, Dict_Vec
         int append = 2;
         for(int idx = 1; idx < 16; idx += 1){
             if(stargets[b] + 1 != idx){
-            	board_glove2[b][append] = board_glove[b][idx];
-            	board_dict2[b][append++] = board_dict[b][idx];
+            	board_glove2[append] = board_glove[b][idx];
+            	board_dict2[append++] = board_dict[b][idx];
             }
         }
         free(board_glove[b]);
@@ -203,17 +217,20 @@ int is_valid_clue(Glove_Vector clue, Glove_Vector * board){
     return 1;
 }
 
-void get_possibles(Glove_Vector ** board_glove, Dict_Vector ** board_dict, float ** possible_scores, int ** possible_idx, int num_rounds){
+void get_possibles(Glove_Vector ** board_glove, Dict_Vector ** board_dict, float ** possible_scores, unsigned short ** possible_idx, int num_rounds){
     //In the future, make this a HEAP or something faster
     //Consider shift to ALT
-    for(int idx = 0; idx < 5000; idx += 1){
+    for(unsigned short idx = 0; idx < 5000; idx += 1){
         //IMPORTANT: IN THE FUTURE, this will need to be read directly from SD, and FAST
     	Glove_Vector clue_glove;
         Dict_Vector clue_dict;
-    	char word[25];
-    	float * vec_floats = read_vec(board_idx[gather_idx], word);
+    	char * word = malloc(sizeof(*word) * 25);
+    	float * vec_floats = read_vec(idx, word);
     	float clue_doc_freq = vec_floats[0];
-    	clue_glove.word = word;
+    	for(unsigned short wi = 0; wi < 25; wi += 1){
+        	clue_glove.word[wi] = word[wi];
+    	}
+    	free(word);
     	for(unsigned short move_idx = 0; move_idx < 300; move_idx += 1){
 			//SAVE WORD TO GLOVE VEC TOO
 			clue_glove.dims[move_idx] = vec_floats[1 + move_idx];
@@ -230,7 +247,7 @@ void get_possibles(Glove_Vector ** board_glove, Dict_Vector ** board_dict, float
             }
             float score = vector_score(clue_glove, clue_dict, board_glove[b][0], board_dict[b][0]);
             score += vector_score(clue_glove, clue_dict, board_glove[b][1], board_dict[b][1]);
-            score -= all_doc_freq[idx];
+            score -= clue_doc_freq;
             unsigned short insert_idx = 0;
             for(unsigned short back = (idx<200)?idx-1:199; back >= 0; back -= 1){
                 //Figure out where to insert based on score
@@ -274,15 +291,19 @@ float overlap_score(Glove_Vector * board_gloves, Dict_Vector * board_dicts, unsi
     //WILL BE DONE BY A READ ON THE FLY
     Glove_Vector clue_glove;
     Dict_Vector clue_dict;
-
-    float * vec_floats = read_vec(board_idx[gather_idx]);
+    char * word = malloc(sizeof(*word) * 25);
+    float * vec_floats = read_vec(clue_idx, word);
 	for(unsigned short move_idx = 0; move_idx < 300; move_idx += 1){
 		//SAVE WORD TO GLOVE VEC TOO
 		clue_glove.dims[move_idx] = vec_floats[1 + move_idx];
 		if(move_idx < 200){
 			clue_dict.dims[move_idx] = vec_floats[301 + move_idx];
 		}
+		if(move_idx < 25){
+			clue_glove.word[move_idx] = word[move_idx];
+		}
 	}
+	free(word);
 	free(vec_floats);
 
     //Calculate An Overlap Score
@@ -343,11 +364,11 @@ unsigned short * get_clues(Glove_Vector ** board_glove, Dict_Vector ** board_dic
 
     //FREES
     for(int b = 0; b < num_rounds; b += 1){
-        free(boards_gloves[b]);
+        free(board_dict[b]);
         free(possible_scores[b]);
         free(possible_idx[b]);
     }
-    free(boards_gloves);
+    free(board_dict);
     free(possible_scores);
     free(possible_idx);
 
@@ -378,7 +399,7 @@ unsigned short * get_clues(Glove_Vector ** board_glove, Dict_Vector ** board_dic
 //    fclose(file);
 //}
 
-void play_round(unsigned short * clues, Glove_Vector * board_glove, int num_rounds){
+void play_round(unsigned short * clues, Glove_Vector ** board_glove, int num_rounds){
 	//HAS TO BE CHANGED ENTIRELY TO PLAY ON DEVICE AND NOT TERMINAL
 //    for(int b = 0; b < num_rounds; b += 1){
 //        printf("Here are your board words for board # %d:\n", b);
@@ -501,7 +522,7 @@ void play_round(unsigned short * clues, Glove_Vector * board_glove, int num_roun
 //    return ret;
 //}
 
-int main(int argc, char * argv[]){
+void clues(){
 //    int num_rounds = read_rounds(argv[1]);
      int num_rounds = 10;
 //    Glove_Vector all_glove[50000];

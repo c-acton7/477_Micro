@@ -1,0 +1,16 @@
+../Core/Src/clues.c:16:5:get_rand_num	4	static
+../Core/Src/clues.c:26:16:pick_index	24	static
+../Core/Src/clues.c:48:16:is_subset	32	static
+../Core/Src/clues.c:85:6:shuffle	24	static
+../Core/Src/clues.c:97:7:cosine_similarity	56	static
+../Core/Src/clues.c:108:5:same	24	static
+../Core/Src/clues.c:125:7:glove_similarity	8	static
+../Core/Src/clues.c:129:7:dict_similarity	8	static
+../Core/Src/clues.c:133:7:vector_score	2456	static
+../Core/Src/clues.c:137:6:gen_board	4128	static
+../Core/Src/clues.c:210:5:is_valid_clue	16	static
+../Core/Src/clues.c:220:6:get_possibles	6152	static
+../Core/Src/clues.c:290:7:overlap_score	4536	static
+../Core/Src/clues.c:325:18:get_clues	88	static
+../Core/Src/clues.c:402:6:play_round	24	static
+../Core/Src/clues.c:525:6:clues	48	static

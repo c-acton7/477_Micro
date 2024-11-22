@@ -15,5 +15,4 @@
 ../FATFS/Target/user_diskio_spi.c:404:16:USER_SPI_read	24	static
 ../FATFS/Target/user_diskio_spi.c:443:16:USER_SPI_write	24	static
 ../FATFS/Target/user_diskio_spi.c:484:16:USER_SPI_ioctl	56	static
-../FATFS/Target/user_diskio_spi.c:566:9:read_vec	2608	static
-../FATFS/Target/user_diskio_spi.c:587:8:read_word	624	static
+../FATFS/Target/user_diskio_spi.c:566:9:read_vec	624	static
