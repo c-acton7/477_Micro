@@ -7,10 +7,10 @@
 ../Core/Src/clues.c:125:7:glove_similarity	8	static
 ../Core/Src/clues.c:129:7:dict_similarity	8	static
 ../Core/Src/clues.c:133:7:vector_score	2456	static
-../Core/Src/clues.c:137:6:gen_board	4152	static
-../Core/Src/clues.c:210:5:is_valid_clue	16	static
-../Core/Src/clues.c:220:6:get_possibles	6152	static
-../Core/Src/clues.c:290:7:overlap_score	4536	static
-../Core/Src/clues.c:325:18:get_clues	88	static
-../Core/Src/clues.c:402:6:play_round	24	static
-../Core/Src/clues.c:525:6:clues	48	static
+../Core/Src/clues.c:140:6:gen_board	36656	static
+../Core/Src/clues.c:217:5:is_valid_clue	16	static
+../Core/Src/clues.c:227:6:get_possibles	6168	static
+../Core/Src/clues.c:298:7:overlap_score	4536	static
+../Core/Src/clues.c:333:18:get_clues	88	static
+../Core/Src/clues.c:410:6:play_round	24	static
+../Core/Src/clues.c:533:6:clues	48	static

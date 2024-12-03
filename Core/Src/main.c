@@ -119,27 +119,26 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
-  //Init display with 480x272 and set color as 16-bit per pixel
+////  Init display with 480x272 and set color as 16-bit per pixel
 //  RA8875_begin(LCD_RESET_GPIO_Port,LCD_RESET_Pin,LCD_WAIT_GPIO_Port,LCD_WAIT_Pin,RA8875_800x480,RA8875_16BPP);
-
-  //Power on the dispaly
+//
+////  Power on the dispaly
 //  RA8875_display_on(1);
-
-  //Backlight on
+//
+////  Backlight on
 //  RA8875_pwm1_config(1,RA8875_PWM_CLK_DIV1);
-
+//
 //  title_screen();
-
+//
 //  game_matrix();
   	  FATFS fs;
   	  FRESULT fr;
-
 
   	  fr = f_mount(&fs, "", 1);
   	  clues();
 //  	  char word[25] = {'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'};
 //  	  char word[25];
-//  	  read_vec(1, word);
+//  	  read_vec(3, word);
   	  fr = f_mount(NULL, "", 0);
 
 
@@ -151,7 +150,7 @@ int main(void)
 
 //
 //  HAL_Delay(1000);
-
+//
 //  show_menu();
 
   /* USER CODE END 2 */

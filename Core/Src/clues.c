@@ -131,7 +131,10 @@ float dict_similarity(Dict_Vector dict1, Dict_Vector dict2){
 }
 
 float vector_score(Glove_Vector glove1, Dict_Vector dict1, Glove_Vector glove2, Dict_Vector dict2){
-    return glove_similarity(glove1, glove2) + dict_similarity(dict1, dict2);
+    float glove_score = glove_similarity(glove1, glove2);
+    float dict_score = dict_similarity(dict1, dict2);
+
+	return glove_score + dict_score;
 }
 
 void gen_board(unsigned short * board_idx, Glove_Vector ** board_glove, Dict_Vector ** board_dict, int num_rounds){
@@ -143,7 +146,8 @@ void gen_board(unsigned short * board_idx, Glove_Vector ** board_glove, Dict_Vec
 	//GATHER ALL BOARD VECTOR MATERIALS
     for(unsigned short gather_idx = 0; gather_idx < 16 * num_rounds; gather_idx += 1){
     	char word[25];
-    	float * vec_floats = read_vec(board_idx[gather_idx], word);
+    	float * vec_floats;
+    	vec_floats = read_vec(board_idx[gather_idx], word);
     	for(unsigned short wi = 0; wi < 25; wi += 1){
         	board_glove[gather_idx / 16][gather_idx % 16].word[wi] = word[wi];
     	}
@@ -155,29 +159,32 @@ void gen_board(unsigned short * board_idx, Glove_Vector ** board_glove, Dict_Vec
     			board_dict[gather_idx/16][gather_idx%16].dims[move_idx] = vec_floats[301 + move_idx];
     		}
     	}
-    	//free(vec_floats);
+    	free(vec_floats);
     }
 
     //Vector Scores for each board comparing to first target
-    float ** scores = malloc(sizeof(*scores) * num_rounds);
+//    float ** scores = malloc(sizeof(*scores) * num_rounds);
+    float scores[1][15];
     for(unsigned short brd = 0; brd < num_rounds; brd += 1){
-        scores[brd] = malloc(sizeof(**scores) * 15);
         for(unsigned short idx = 1; idx < 16; idx += 1){
-            scores[brd][idx - 1] = vector_score(board_glove[brd][0], board_dict[brd][0], board_glove[brd][idx], board_dict[brd][idx]);
+			float scr = vector_score(board_glove[brd][0], board_dict[brd][0], board_glove[brd][idx], board_dict[brd][idx]);
+            scores[brd][idx - 1] = scr;
         }
     }
 //    printf("C2\n");
 
     //PICK SECOND TARGET INDEXES
-    unsigned short * stargets = malloc(sizeof(*stargets) * num_rounds);
+    unsigned short stargets[1];
     for(unsigned short b = 0; b < num_rounds; b += 1){
         stargets[b] = pick_index(scores[b], 15, 1);
     }
 
     //COMPILE BOARDS
     for(unsigned short b = 0; b < num_rounds; b += 1){
-        Glove_Vector * board_glove2 = malloc(sizeof(*board_glove) * 16);
-        Dict_Vector * board_dict2 = malloc(sizeof(*board_dict) * 16);
+//        Glove_Vector * board_glove2 = malloc(sizeof(*board_glove) * 16);
+//        Dict_Vector * board_dict2 = malloc(sizeof(*board_dict) * 16);
+    	Glove_Vector board_glove2[16];
+    	Dict_Vector board_dict2[16];
         board_glove2[0] = board_glove[b][0];
         board_glove2[1] = board_glove[b][stargets[b] + 1];
         board_dict2[0] = board_dict[b][0];
@@ -189,9 +196,9 @@ void gen_board(unsigned short * board_idx, Glove_Vector ** board_glove, Dict_Vec
             	board_dict2[append++] = board_dict[b][idx];
             }
         }
-        free(board_glove[b]);
-        free(board_dict[b]);
-        free(scores[b]);
+//        free(board_glove[b]);
+//        free(board_dict[b]);
+//        free(scores[b]);
         board_glove[b] = board_glove2;
         board_dict[b] = board_dict2;
     }
@@ -202,8 +209,8 @@ void gen_board(unsigned short * board_idx, Glove_Vector ** board_glove, Dict_Vec
     //     }
     //     board_idx[i] = brd_idx[i];
     // }
-    free(stargets);
-    free(scores);
+//    free(stargets);
+//    free(scores);
     free(board_idx);
 }
 
@@ -220,17 +227,18 @@ int is_valid_clue(Glove_Vector clue, Glove_Vector * board){
 void get_possibles(Glove_Vector ** board_glove, Dict_Vector ** board_dict, float ** possible_scores, unsigned short ** possible_idx, int num_rounds){
     //In the future, make this a HEAP or something faster
     //Consider shift to ALT
-    for(unsigned short idx = 0; idx < 5000; idx += 1){
+
+	for(unsigned short idx = 0; idx < 500; idx += 1){
         //IMPORTANT: IN THE FUTURE, this will need to be read directly from SD, and FAST
     	Glove_Vector clue_glove;
         Dict_Vector clue_dict;
-    	char * word = malloc(sizeof(*word) * 25);
+    	char word[25];
     	float * vec_floats = read_vec(idx, word);
     	float clue_doc_freq = vec_floats[0];
     	for(unsigned short wi = 0; wi < 25; wi += 1){
         	clue_glove.word[wi] = word[wi];
     	}
-    	free(word);
+//    	free(word);
     	for(unsigned short move_idx = 0; move_idx < 300; move_idx += 1){
 			//SAVE WORD TO GLOVE VEC TOO
 			clue_glove.dims[move_idx] = vec_floats[1 + move_idx];
@@ -249,7 +257,7 @@ void get_possibles(Glove_Vector ** board_glove, Dict_Vector ** board_dict, float
             score += vector_score(clue_glove, clue_dict, board_glove[b][1], board_dict[b][1]);
             score -= clue_doc_freq;
             unsigned short insert_idx = 0;
-            for(unsigned short back = (idx<200)?idx-1:199; back >= 0; back -= 1){
+            for(unsigned short back = (idx<200)?idx:199; back < 51000; back -= 1){
                 //Figure out where to insert based on score
                 if(possible_scores[b][back] > score){
                     insert_idx = back + 1;

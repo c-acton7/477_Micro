@@ -113,6 +113,7 @@ BYTE xchg_spi (
 {
 	BYTE rxDat;
     HAL_SPI_TransmitReceive(&SD_SPI_HANDLE, &dat, &rxDat, 1, HAL_MAX_DELAY);
+//	HAL_SPI_TransmitReceive_DMA(&SD_SPI_HANDLE, &dat, &rxDat, 1);
 
 
 //	 Clear the DMA transfer complete flag
@@ -146,6 +147,7 @@ void xmit_spi_multi (
 )
 {
 	HAL_SPI_Transmit(&SD_SPI_HANDLE, buff, btx, HAL_MAX_DELAY);
+//	HAL_SPI_Transmit_DMA(&SD_SPI_HANDLE, buff, btx);
 
 //	while ((READ_BIT(hspi->Instance->IER, SPI_IT_EOT) == 0)) {}
 
@@ -576,8 +578,8 @@ float * read_vec(unsigned short index, char * word){
 	uint32_t charsRead = 0;
 
 
-	float arr_floats[501];
-//	malloc(sizeof(*arr_float) * 508);
+//	float arr_floats[501];
+	float * arr_floats = malloc(sizeof(*arr_floats) * 501);
 
 	spiselect();
 	snprintf(name, 22,  "Win/v/vector%05d.bin", index);

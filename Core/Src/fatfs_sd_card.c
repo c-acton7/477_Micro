@@ -30,7 +30,7 @@ void get_word_matrix(WordVector* word_matrix)
     	return;
     }
 
-    fr = f_open(&file, "floats.bin", FA_READ);
+    fr = f_open(&file, "worddata.csv", FA_READ);
     if (fr != FR_OK) {
     	return;
     }
