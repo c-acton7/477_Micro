@@ -36,12 +36,13 @@ int read_keypad(void) {
 			HAL_GPIO_WritePin(COL4_GPIO_Port, COL4_Pin, GPIO_PIN_RESET);
 		}
 
-		// Read current rows
+//		 Read current rows
 		if(HAL_GPIO_ReadPin(ROW1_GPIO_Port, ROW1_Pin) == GPIO_PIN_RESET) return i*5 + 0;
 		if(HAL_GPIO_ReadPin(ROW2_GPIO_Port, ROW2_Pin) == GPIO_PIN_RESET) return i*5 + 1;
 		if(HAL_GPIO_ReadPin(ROW3_GPIO_Port, ROW3_Pin) == GPIO_PIN_RESET) return i*5 + 2;
 		if(HAL_GPIO_ReadPin(ROW4_GPIO_Port, ROW4_Pin) == GPIO_PIN_RESET) return i*5 + 3;
 		if(HAL_GPIO_ReadPin(ROW5_GPIO_Port, ROW5_Pin) == GPIO_PIN_RESET) return i*5 + 4;
+
 	}
 
 	return -1; // No key pressed

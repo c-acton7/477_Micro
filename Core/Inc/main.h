@@ -28,6 +28,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
+#include "game_engine.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -39,6 +40,8 @@ extern "C" {
 extern SPI_HandleTypeDef hspi1;
 extern SPI_HandleTypeDef hspi2;
 extern TIM_HandleTypeDef htim6;
+extern I2S_HandleTypeDef hi2s3;
+extern Game_HandleTypeDef hgame;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -59,14 +62,16 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SPI1_CS_Pin GPIO_PIN_4
-#define SPI1_CS_GPIO_Port GPIOA
+#define Dummy_HiZ_Pin GPIO_PIN_4
+#define Dummy_HiZ_GPIO_Port GPIOA
 #define LCD_WAIT_Pin GPIO_PIN_4
 #define LCD_WAIT_GPIO_Port GPIOC
 #define LCD_RESET_Pin GPIO_PIN_5
 #define LCD_RESET_GPIO_Port GPIOC
 #define SPI2_CS_Pin GPIO_PIN_12
 #define SPI2_CS_GPIO_Port GPIOB
+#define SPI1_CS_Pin GPIO_PIN_13
+#define SPI1_CS_GPIO_Port GPIOD
 #define ROW5_Pin GPIO_PIN_0
 #define ROW5_GPIO_Port GPIOD
 #define ROW1_Pin GPIO_PIN_1

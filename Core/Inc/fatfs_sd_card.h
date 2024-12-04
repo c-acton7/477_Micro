@@ -35,12 +35,13 @@
 #define CT_BLOCK  0x08    /* Block addressing */
 
 //game-specific parsing
-#define MAX_LINE_LENGTH 128
-#define MAX_WORD_LENGTH 6  // 5 characters + null terminator
+#define MAX_LINE_LENGTH 13
+#define MAX_WORD_LENGTH 13  // 11 characters + null terminator
 #define VECTOR_SIZE 5
 
 typedef struct {
     char word[MAX_WORD_LENGTH];
+    size_t length;
     float vector[VECTOR_SIZE];
 } WordVector;
 
@@ -51,7 +52,7 @@ DRESULT SD_disk_read (BYTE pdrv, BYTE* buff, DWORD sector, UINT count);
 DRESULT SD_disk_write (BYTE pdrv, const BYTE* buff, DWORD sector, UINT count);
 DRESULT SD_disk_ioctl (BYTE pdrv, BYTE cmd, void* buff);
 
-void get_word_matrix(WordVector* word_matrix);
+void get_word_matrix(WordVector* word_matrix, int board_num, int round_num);
 void parse_word_data(char* line, WordVector* word_vector);
 
 #define SPI_TIMEOUT 100
