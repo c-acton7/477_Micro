@@ -17,8 +17,10 @@
 #include "fatfs.h"
 
 #include <string.h>
+#include <stdio.h>
 
 uint16_t Timer1, Timer2;          /* 1ms Timer Counter */
+FATFS fs;
 
 static volatile DSTATUS Stat = STA_NOINIT;  /* Disk Status */
 static uint8_t CardType;                    /* Type 0:MMC, 1:SDC, 2:Block addressing */
@@ -554,6 +556,15 @@ DRESULT SD_disk_ioctl(BYTE drv, BYTE ctrl, void *buff)
   return res;
 }
 
+void mount_sd(void) {
+	HAL_Delay(1000);
+	FRESULT fr;
+	fr = f_mount(&fs, "", 1);
+	if (fr != FR_OK) {		//1 means now
+		return;
+	}
+}
+
 void parse_word_data(char* line, WordVector* word_vector) {
 
     //extract the word
@@ -574,21 +585,12 @@ void parse_word_data(char* line, WordVector* word_vector) {
 
 void get_word_matrix(WordVector* word_matrix, int board_num, int round_num)
 {
-	HAL_Delay(1000);
-    FATFS fs;
-    FIL file;
-    FRESULT fr;
-    char line[MAX_LINE_LENGTH];
-
-    fr = f_mount(&fs, "", 1);
-    if (fr != FR_OK) {		//1 means now
-    	return;
-    }
-
-    char filename[12];    // Enough space for "r0000\0"
+	FIL file;
+	char line[MAX_WORD_LENGTH];
+    char filename[10];    // Enough space for "r0000\0"
     snprintf(filename, sizeof(filename), "r%04d.txt", board_num);
 
-    fr = f_open(&file, filename, FA_READ);
+    FRESULT fr = f_open(&file, filename, FA_READ);
     if (fr != FR_OK) {
     	return;
     }
@@ -599,11 +601,11 @@ void get_word_matrix(WordVector* word_matrix, int board_num, int round_num)
 		}
 	}
 
-    f_gets(line, MAX_WORD_LENGTH, &file);
+    f_gets(line, 25, &file);
 	size_t length = strlen(line);
 	word_matrix[NUM_WORDS].length = length;
 	line[length - 1] = '\0';
-	strcpy(&word_matrix[NUM_WORDS - 1], line);
+	strcpy(word_matrix[NUM_WORDS].word, line);
 
     f_gets(line, sizeof(line), &file); //read and discard
 
@@ -613,14 +615,11 @@ void get_word_matrix(WordVector* word_matrix, int board_num, int round_num)
     	length = strlen(line);
     	word_matrix[i].length = length;
     	line[length - 1] = '\0';
-    	strcpy(&word_matrix[i], line);
+    	strcpy(word_matrix[i].word, line);
     }
 
     //close the file
     f_close(&file);
-
-    //unmount the SD card
-    f_mount(NULL, "", 0);
 
     return;
 }

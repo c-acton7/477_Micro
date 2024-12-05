@@ -128,9 +128,9 @@ int main(void)
   //Backlight on
   RA8875_pwm1_config(1,RA8875_PWM_CLK_DIV1);
 
-  init_game(&hgame);
+  mount_sd();
 
-  title_screen(&hgame);
+  init_game(&hgame);
 
   show_menu(&hgame);
 
@@ -143,7 +143,7 @@ int main(void)
   {
 	k = read_keypad();
 	process_input(&hgame, k);
-	HAL_Delay(10);
+//	HAL_Delay(10);
 
     /* USER CODE END WHILE */
 

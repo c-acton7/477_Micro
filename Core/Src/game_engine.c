@@ -9,9 +9,12 @@
 #include "game_engine.h"
 #include "keyboard_io.h"
 #include "fatfs_sd_card.h"
+#include "diskio.h"
+#include "fatfs.h"
 #include "main.h"
 #include <stdlib.h>
 #include <stdio.h>
+
 
 void init_game(Game_HandleTypeDef *hgame) {
 
@@ -19,13 +22,13 @@ void init_game(Game_HandleTypeDef *hgame) {
 
     hgame->set_b = 0;                // Brightness flag
     hgame->current_b = 255;          // Maximum brightness
-    hgame->guess_remain = 2;         // Guesses remaining
+    hgame->guess_remain = 1;         // Guess remains
     hgame->score = 0;                // Initial score
     hgame->hi_score = 0;             // High score
     hgame->picked = -1;              // No word picked
     hgame->index0 = 0;               // Initial index tracking 0
     hgame->index1 = 1;               // Initial index tracking 1
-    hgame->board_num = 1;            // Start with board 1
+    hgame->board_num = 1; 			 // Start with board 1
     hgame->round_num = 1;            // Start with round 1
     hgame->game_timer = 60;          // Start with 30 seconds
 }
@@ -143,7 +146,7 @@ void title_screen(Game_HandleTypeDef *hgame) {
 	RA8875_draw_fill_triangle(CENTER_X-40, CENTER_Y+100, CENTER_X+40, CENTER_Y+100, CENTER_X, CENTER_Y+160, RA8875_WHITE);
 	RA8875_draw_fill_triangle(CENTER_X-40, CENTER_Y+210, CENTER_X+40, CENTER_Y+210, CENTER_X, CENTER_Y+140, RA8875_WHITE);
 	RA8875_draw_fill_round_rect(CENTER_X-40, CENTER_Y+90, 80, 20, 10, 0xbc20);
-	RA8875_draw_fill_round_rect(CENTER_X-40, CENTER_Y+200, 80, 20, 10, 0xbc20);	//orange
+	RA8875_draw_fill_round_rect(CENTER_X-40, CENTER_Y+197, 80, 20, 10, 0xbc20);	//orange
 	RA8875_draw_fill_rect(CENTER_X-34, CENTER_Y+100, 7, 110, 0xbc20);
 	RA8875_draw_fill_rect(CENTER_X+26, CENTER_Y+100, 7, 110, 0xbc20);
 
@@ -153,6 +156,8 @@ void title_screen(Game_HandleTypeDef *hgame) {
 		HAL_Delay(100);
 	}
 	RA8875_fill_screen(RA8875_BLACK);
+
+	hgame->board_num = (rand() % 999) + 1;
 
 	return;
 }
@@ -241,8 +246,14 @@ void game_matrix(Game_HandleTypeDef *hgame) {
 	//background
 	RA8875_fill_screen(RA8875_BLUE);
 	//clue
-	RA8875_draw_fill_rect(CENTER_X-100, 30, 200, 70, RA8875_YELLOW);
-	RA8875_draw_fill_rect(CENTER_X-90, 40, 180, 50, RA8875_BLUE);
+	RA8875_draw_fill_rect(CENTER_X-130, 30, 260, 70, RA8875_YELLOW);
+	RA8875_draw_fill_rect(CENTER_X-120, 40, 240, 50, RA8875_BLUE);
+	RA8875_draw_fill_rect(35, 40, 240, 50, RA8875_YELLOW);
+	RA8875_draw_fill_rect(40, 45, 230, 40, RA8875_BLUE);
+	RA8875_draw_fill_rect(CENTER_X+125, 40, 240, 50, RA8875_YELLOW);
+	RA8875_draw_fill_rect(CENTER_X+130, 45, 230, 40, RA8875_BLUE);
+	RA8875_draw_fill_triangle(CENTER_X-130, 31, CENTER_X-130, 99, CENTER_X-160, 65, RA8875_YELLOW);
+	RA8875_draw_fill_triangle(CENTER_X+130, 31, CENTER_X+130, 99, CENTER_X+160, 65, RA8875_YELLOW);
 	//4x4 square matrix with words
 	for (int row = 0; row < ROWS; row++) {
 	  for (int col = 0; col < COLS; col++) {
@@ -251,14 +262,13 @@ void game_matrix(Game_HandleTypeDef *hgame) {
 
 		  RA8875_draw_fill_rect(x, y, SQWIDTH, SQHEIGHT, RA8875_WHITE);
 
-		  int textX = x + SQWIDTH / 2 - (7 * ((hgame->word_matrix)[numbers[4*row + col]]).length);
+		  int textX = x + SQWIDTH / 2 - (7.3 * ((hgame->word_matrix)[numbers[4*row + col]]).length);
 		  int textY = y + SQHEIGHT / 2 - 15;
 
 		  RA8875_text_mode();
 		  RA8875_text_cursor_position(textX, textY);
 		  RA8875_text_color (RA8875_BLACK, RA8875_WHITE);
 		  RA8875_text_scale(1);
-
 		  RA8875_text_write(((hgame->word_matrix)[numbers[4*row + col]]).word, ((hgame->word_matrix)[numbers[4*row + col]]).length - 1);
 		  RA8875_graphic_mode();
 	  }
@@ -267,21 +277,27 @@ void game_matrix(Game_HandleTypeDef *hgame) {
 	char buffer[10];
 	sprintf(buffer, "%d", hgame->game_timer);
 	RA8875_text_mode();
-	RA8875_text_cursor_position(CENTER_X-200, 50);
+	RA8875_text_cursor_position(CENTER_X-340, 50);
 	RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
 	RA8875_text_scale(1);
+	RA8875_text_write("Timer:", 6);
+	RA8875_text_cursor_position(CENTER_X-220, 50);
 	RA8875_text_write(buffer, 2);
 	//score
 	sprintf(buffer, "Score: %02d", hgame->score);
 	RA8875_text_cursor_position(CENTER_X+190, 50);
 	RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
 	RA8875_text_scale(1);
-	RA8875_text_write(buffer, 10);
+	RA8875_text_write(buffer, 9);
 	//clue
 	RA8875_text_cursor_position(CENTER_X - (7*hgame->word_matrix[NUM_WORDS].length), 50);
 	RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
 	RA8875_text_scale(1);
-	RA8875_text_write(hgame->word_matrix[NUM_WORDS-1].word, hgame->word_matrix[NUM_WORDS].length - 1);
+	RA8875_text_write(hgame->word_matrix[NUM_WORDS].word, hgame->word_matrix[NUM_WORDS].length - 1);
+	RA8875_text_cursor_position(CENTER_X - 122, 10);
+	RA8875_text_color (RA8875_YELLOW, RA8875_BLUE);
+	RA8875_text_scale(0);
+	RA8875_text_write("Select 2 Words Related to Clue:", 31);
 	RA8875_graphic_mode();
 
 	HAL_TIM_Base_Start_IT(&htim6);
@@ -293,6 +309,7 @@ void process_input(Game_HandleTypeDef *hgame, int key) {
 
 					//   0  1  2  3   4   5  6  7  8   9   10 11 12  13  14  15 16 17  18  19
 	uint8_t mapping[] = {0, 4, 8, 12, -1, 1, 5, 9, 13, -1, 2, 6, 10, 14, -1, 3, 7, 11, 15, -1};
+	int gt[2] = {hgame->index0, hgame->index1};
 	switch(hgame->mode) {
 		case GAME_MODE_TITLE:
 			break;
@@ -326,31 +343,53 @@ void process_input(Game_HandleTypeDef *hgame, int key) {
 			}
 			break;
 		case GAME_MODE_PLAY:
-			if(0 <= key && (key+6) % 5 && key != hgame->picked) {
+			if(key == -1 || mapping[key] == -1) {
+				break;
+			}
+			key = mapping[key];
+			if(key != hgame->picked) {
 				HAL_Delay(100);
-				key = mapping[key];
-				hgame->guess_remain -= 1;
 				int x = MARGIN + (key % 4) * (SQWIDTH + SPACE);
 				int y = HEADER + MARGIN + (key / 4) * (SQHEIGHT + SPACE);
 //			    int textX = x + SQWIDTH / 2 - 40;
 //			    int textY = y + SQHEIGHT / 2 - 15;
-				RA8875_draw_fill_rect(x, y, SQWIDTH, SQHEIGHT, RA8875_GREEN);
-				HAL_Delay(50);
-//				RA8875_text_mode();
-//				RA8875_text_color (RA8875_BLACK, RA8875_GREEN);
-//				RA8875_text_cursor_position(textX, textY);
-//				RA8875_text_scale(1);
-//				RA8875_text_write(word_matrix[key].word, 6);
-//				RA8875_graphic_mode();
-				if(hgame->guess_remain > 0) {
+			    if(key == gt[0] || key == gt[1]) {
+					RA8875_draw_fill_rect(x-5, y-5, SQWIDTH, 10, RA8875_GREEN);
+					RA8875_draw_fill_rect(x-5, y-5, 10, SQHEIGHT, RA8875_GREEN);
+					RA8875_draw_fill_rect(x-5, y+SQHEIGHT-5, SQWIDTH+10, 10, RA8875_GREEN);
+					RA8875_draw_fill_rect(x+SQWIDTH-5, y-5, 10, SQHEIGHT, RA8875_GREEN);
+					HAL_Delay(10);
+			    }
+			    else{
+					RA8875_draw_fill_rect(x-5, y-5, SQWIDTH, 10, RA8875_RED);
+					RA8875_draw_fill_rect(x-5, y-5, 10, SQHEIGHT, RA8875_RED);
+					RA8875_draw_fill_rect(x-5, y+SQHEIGHT-5, SQWIDTH+10, 10, RA8875_RED);
+					RA8875_draw_fill_rect(x+SQWIDTH-5, y-5, 10, SQHEIGHT, RA8875_RED);
+					HAL_Delay(10);
+			    }
+				if(hgame->guess_remain == 1) {
+					hgame->guess_remain = 0;
 					hgame->picked = key;
 				}
 				else if(hgame->guess_remain == 0) {
+					HAL_TIM_Base_Stop_IT(&htim6);
 					int guess_list[2] = {hgame->picked, key};
-					int gt[2] = {hgame->index0, hgame->index1};
 					calc_score(hgame, guess_list, gt);
 					char buffer[10];
 					sprintf(buffer, "Score: %02d", hgame->score);
+
+					x = MARGIN + (gt[0] % 4) * (SQWIDTH + SPACE);
+					y = HEADER + MARGIN + (gt[0] / 4) * (SQHEIGHT + SPACE);
+					RA8875_draw_fill_rect(x-5, y-5, SQWIDTH, 10, RA8875_GREEN);
+					RA8875_draw_fill_rect(x-5, y-5, 10, SQHEIGHT, RA8875_GREEN);
+					RA8875_draw_fill_rect(x-5, y+SQHEIGHT-5, SQWIDTH+10, 10, RA8875_GREEN);
+					RA8875_draw_fill_rect(x+SQWIDTH-5, y-5, 10, SQHEIGHT, RA8875_GREEN);
+					x = MARGIN + (gt[1] % 4) * (SQWIDTH + SPACE);
+					y = HEADER + MARGIN + (gt[1] / 4) * (SQHEIGHT + SPACE);
+					RA8875_draw_fill_rect(x-5, y-5, SQWIDTH, 10, RA8875_GREEN);
+					RA8875_draw_fill_rect(x-5, y-5, 10, SQHEIGHT, RA8875_GREEN);
+					RA8875_draw_fill_rect(x-5, y+SQHEIGHT-5, SQWIDTH+10, 10, RA8875_GREEN);
+					RA8875_draw_fill_rect(x+SQWIDTH-5, y-5, 10, SQHEIGHT, RA8875_GREEN);
 					RA8875_text_mode();
 					RA8875_text_cursor_position(CENTER_X+190, 50);
 					RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
@@ -358,8 +397,9 @@ void process_input(Game_HandleTypeDef *hgame, int key) {
 					RA8875_text_write(buffer, 10);
 					RA8875_graphic_mode();
 					hgame->picked = -1;
-					hgame->guess_remain = 2;
+					hgame->guess_remain = 1;
 					hgame->round_num++;
+					HAL_Delay(1000);
 					if(hgame->round_num > 10) {
 					  hgame->game_timer = 60;
 					  HAL_TIM_Base_Stop_IT(&htim6);
@@ -440,6 +480,7 @@ void process_input(Game_HandleTypeDef *hgame, int key) {
 					RA8875_text_scale(1);
 					RA8875_text_write(buffer, 3);
 					RA8875_graphic_mode();
+					HAL_Delay(500);
 				}
 				else {
 					RA8875_draw_fill_round_rect(SCREEN_WIDTH-210, SCREEN_HEIGHT-90, 180, 70, 10, RA8875_BLACK);
@@ -456,7 +497,7 @@ void process_input(Game_HandleTypeDef *hgame, int key) {
 				}
 			}
 			else if((key == 19) && hgame->set_b) {
-				hgame->current_b += 8;
+				hgame->current_b += 5;
 				if (hgame->current_b > 255) {
 					hgame->current_b = 255;
 				}
@@ -466,7 +507,7 @@ void process_input(Game_HandleTypeDef *hgame, int key) {
 				RA8875_draw_fill_rect(CENTER_X+25+(hgame->current_b), CENTER_Y-16, 10, 37, RA8875_BLACK);
 			}
 			else if((key == 14) && hgame->set_b) {
-				hgame->current_b -= 8;
+				hgame->current_b -= 5;
 				if (hgame->current_b < 10) {
 					hgame->current_b = 10;
 				}
@@ -555,7 +596,7 @@ void end_game(Game_HandleTypeDef *hgame) {
 	RA8875_draw_fill_triangle(CENTER_X+152, 85, CENTER_X+145, 50, CENTER_X+160, 50, RA8875_YELLOW);
 
 	hgame->score = 0;
-	hgame->guess_remain = 2;
+	hgame->guess_remain = 1;
 	hgame->picked = -1;
 	hgame->round_num = 1;
 

@@ -232,7 +232,7 @@ void TIM6_DAC_IRQHandler(void)
   hgame.game_timer--;
   sprintf(print_timer, "%d", hgame.game_timer);
   RA8875_text_mode();
-  RA8875_text_cursor_position(CENTER_X-200, 50);
+  RA8875_text_cursor_position(CENTER_X-220, 50);
   RA8875_text_color (RA8875_WHITE, RA8875_BLUE);
   RA8875_text_scale(1);
   RA8875_text_write(print_timer, 2);

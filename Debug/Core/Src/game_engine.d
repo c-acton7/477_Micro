@@ -35,7 +35,12 @@ Core/Src/game_engine.o: ../Core/Src/game_engine.c ../Core/Inc/RA8875.h \
  ../Core/Inc/game_engine.h ../Core/Inc/fatfs_sd_card.h \
  ../Middlewares/Third_Party/FatFs/src/diskio.h \
  ../Middlewares/Third_Party/FatFs/src/integer.h ../Core/Inc/keyboard_io.h \
- ../Core/Inc/fatfs_sd_card.h ../Core/Inc/main.h ../Core/Inc/game_engine.h
+ ../Core/Inc/fatfs_sd_card.h ../FATFS/App/fatfs.h \
+ ../Middlewares/Third_Party/FatFs/src/ff.h ../FATFS/Target/ffconf.h \
+ ../Core/Inc/main.h ../Core/Inc/game_engine.h \
+ ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
+ ../Middlewares/Third_Party/FatFs/src/diskio.h \
+ ../Middlewares/Third_Party/FatFs/src/ff.h ../FATFS/Target/user_diskio.h
 ../Core/Inc/RA8875.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
@@ -76,5 +81,12 @@ Core/Src/game_engine.o: ../Core/Src/game_engine.c ../Core/Inc/RA8875.h \
 ../Middlewares/Third_Party/FatFs/src/integer.h:
 ../Core/Inc/keyboard_io.h:
 ../Core/Inc/fatfs_sd_card.h:
+../FATFS/App/fatfs.h:
+../Middlewares/Third_Party/FatFs/src/ff.h:
+../FATFS/Target/ffconf.h:
 ../Core/Inc/main.h:
 ../Core/Inc/game_engine.h:
+../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h:
+../Middlewares/Third_Party/FatFs/src/diskio.h:
+../Middlewares/Third_Party/FatFs/src/ff.h:
+../FATFS/Target/user_diskio.h:

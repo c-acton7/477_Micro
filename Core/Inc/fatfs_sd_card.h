@@ -54,6 +54,7 @@ DRESULT SD_disk_ioctl (BYTE pdrv, BYTE cmd, void* buff);
 
 void get_word_matrix(WordVector* word_matrix, int board_num, int round_num);
 void parse_word_data(char* line, WordVector* word_vector);
+void mount_sd(void);
 
 #define SPI_TIMEOUT 100
 
